@@ -1,0 +1,106 @@
+---
+title: "Untitled"
+output: github_document
+---
+
+## mengatasi nilai yang hilang dalam dataset penguins
+
+### Import Data and call package
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(palmerpenguins)
+```
+
+```{r}
+data("penguins")
+dim(penguins)
+```
+
+```{r}
+glimpse(penguins)
+```
+
+### cek missing value
+
+```{r}
+which(is.na(penguins))
+```
+
+```{r}
+sum(is.na(penguins))
+```
+terdapat 19 nilai NA
+
+```{r}
+sum(is.nan(penguins$bill_length_mm))
+sum(is.nan(penguins$bill_depth_mm))
+sum(is.nan(penguins$flipper_length_mm))
+sum(is.nan(penguins$body_mass_g))
+sum(is.nan(penguins$year))
+```
+ 
+### Handling With remove missing data
+
+```{r}
+penguins_data1 <- penguins
+penguins_data1 <- na.omit(penguins_data1)
+```
+
+[***Data***](https://github.com/muhammadrendysa/handling_missing_value/blob/main/penguins_data1.xlsx)
+
+### Filling Missing Values with Mean or Median
+
+```{r}
+penguins_data2 <- penguins
+
+listMissingColumns <- colnames(penguins_data2)[apply(penguins_data2, 2, anyNA)]
+listMissingColumns
+```
+
+```{r}
+penguins_data2$bill_length_mm <- as.numeric(penguins_data2$bill_length_mm)
+penguins_data2$bill_depth_mm <- as.numeric(penguins_data2$bill_depth_mm)
+penguins_data2$flipper_length_mm <- as.numeric(penguins_data2$flipper_length_mm)
+penguins_data2$body_mass_g <- as.numeric(penguins_data2$body_mass_g)
+penguins_data2$sex <- as.numeric(penguins_data2$sex)
+```
+
+```{r}
+glimpse(penguins_data2)
+```
+
+```{r}
+meanMissing <- apply(penguins_data2[, colnames(penguins_data2) %in% listMissingColumns], 2, mean, na.rm = TRUE)
+meanMissing
+```
+
+```{r}
+penguins_data2 <- penguins_data2 %>%
+  mutate(
+    bill_length_mm = ifelse(is.na(bill_length_mm), meanMissing[1], bill_length_mm),
+    bill_depth_mm = ifelse(is.na(bill_depth_mm), meanMissing[2], bill_depth_mm),
+    flipper_length_mm = ifelse(is.na(flipper_length_mm), meanMissing[3], flipper_length_mm),
+    body_mass_g = ifelse(is.na(body_mass_g), meanMissing[4], body_mass_g),
+    sex = ifelse(is.na(sex), meanMissing[5], sex)
+  )
+
+colnames(penguins_data2)[apply(penguins_data2, 2, anyNA)]
+```
+
+[***data***](https://github.com/muhammadrendysa/handling_missing_value/blob/main/penguins_data2.xlsx)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
